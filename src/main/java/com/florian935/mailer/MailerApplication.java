@@ -1,5 +1,7 @@
 package com.florian935.mailer;
 
+import com.florian935.mailer.model.AttachmentEmail;
+import com.florian935.mailer.model.SimpleEmail;
 import com.florian935.mailer.service.EmailSenderService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -15,18 +17,33 @@ import static lombok.AccessLevel.PRIVATE;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 public class MailerApplication {
 
-	EmailSenderService emailSenderService;
+    EmailSenderService emailSenderService;
 
-	public static void main(String[] args) {
-		SpringApplication.run(MailerApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(MailerApplication.class, args);
+    }
 
-	@EventListener(ApplicationReadyEvent.class)
-	public void sendMail() {
+    @EventListener(ApplicationReadyEvent.class)
+    public void sendSimpleMail() {
 
-		emailSenderService.sendSimpleEmail(
-		        "email-to-send@gmail.com",
-				"This is the email body",
+        final SimpleEmail simpleEmail = new SimpleEmail(
+                "email-to-send",
+                "This is the email body",
                 "The subject");
-	}
+
+        emailSenderService.sendSimpleEmail(simpleEmail);
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void sendEmailAttachment() {
+
+        final AttachmentEmail attachmentEmail = new AttachmentEmail(
+                "email-to-send",
+                "This is the email body",
+                "The subject",
+                "./image/spring-boot.png"
+                );
+
+        emailSenderService.sendEmailWithAttachment(attachmentEmail);
+    }
 }
